@@ -19,6 +19,11 @@ const packageConfig = Object.assign(defaultConfig, {
     plugins: [],
 
     externals: {
+        "@heroicons/react": {
+            commonjs: "@heroicons/react",
+            commonjs2: "@heroicons/react",
+            amd: "@heroicons/react"
+        },
         "@knownout/lib": {
             commonjs: "@knownout/lib",
             commonjs2: "@knownout/lib",
@@ -28,6 +33,11 @@ const packageConfig = Object.assign(defaultConfig, {
             commonjs: "@knownout/interface",
             commonjs2: "@knownout/interface",
             amd: "@knownout/interface"
+        },
+        "recoil": {
+            commonjs: "recoil",
+            commonjs2: "recoil",
+            amd: "recoil"
         },
         "react": {
             commonjs: "react",

@@ -17,7 +17,8 @@
     },
     "homepage": "https://github.com/re-knownout/control-panel#readme",
     "devDependencies": {
-        "@knownout/interface": "^0.0.3",
+        "@heroicons/react": "^1.0.6",
+        "@knownout/interface": "^0.0.9",
         "@knownout/lib": "^0.0.8",
         "@testing-library/react": "^12.1.4",
         "@types/jest": "^27.4.1",
@@ -31,6 +32,7 @@
         "postcss-loader": "^6.2.1",
         "react": "^17.0.2",
         "react-dom": "^17.0.2",
+        "recoil": "^0.6.1",
         "sass": "^1.49.9",
         "sass-loader": "^12.6.0",
         "ts-jest": "^27.1.3",
