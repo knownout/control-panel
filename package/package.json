@@ -17,7 +17,7 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/re-knownout/control-panel.git",
-        "directory": "src/package"
+        "directory": "package"
     },
     "publishConfig": {
         "access": "public"
@@ -27,7 +27,7 @@
     },
     "homepage": "https://github.com/re-knownout/control-panel#readme",
     "dependencies": {
-        "@knownout/interface": "^0.0.1",
+        "@knownout/interface": "^0.0.3",
         "@knownout/lib": "^0.0.8",
         "react": "^17.0.2"
     }

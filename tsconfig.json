@@ -13,11 +13,7 @@
         "esModuleInterop": true,
         "moduleResolution": "Node",
         "resolveJsonModule": true,
-        "paths": {
-            "utils": [
-                "./package/utils.ts"
-            ]
-        },
+        "paths": {},
         "sourceMap": true,
         "sourceRoot": "/",
         "alwaysStrict": true,

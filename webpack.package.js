@@ -7,13 +7,13 @@ const packageConfig = Object.assign(defaultConfig, {
         path: path.resolve(__dirname, "package", "dist"),
         filename: "[name].js",
         library: {
-            name: "interface",
+            name: "control-panel",
             type: "umd"
         }
     },
 
     entry: {
-        interface: path.resolve(__dirname, "package", "interface")
+        "control-panel": path.resolve(__dirname, "package", "control-panel")
     },
 
     plugins: [],
@@ -23,6 +23,11 @@ const packageConfig = Object.assign(defaultConfig, {
             commonjs: "@knownout/lib",
             commonjs2: "@knownout/lib",
             amd: "@knownout/lib"
+        },
+        "@knownout/interface": {
+            commonjs: "@knownout/interface",
+            commonjs2: "@knownout/interface",
+            amd: "@knownout/interface"
         },
         "react": {
             commonjs: "react",

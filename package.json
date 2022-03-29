@@ -3,21 +3,22 @@
     "version": "0.0.0",
     "author": "Alexandr <re-knownout> knownout@hotmail.com",
     "license": "AGPL-3.0",
-    "description": "React components library",
+    "description": "Custom website control panel managed by user-created add-ons",
     "scripts": {
         "serve": "webpack-dev-server --config webpack.config.js",
         "build:package": "webpack --config webpack.package.js"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/re-knownout/interface.git",
-        "directory": "src/package"
+        "url": "git+https://github.com/re-knownout/control-panel.git"
     },
     "bugs": {
-        "url": "https://github.com/re-knownout/interface/issues"
+        "url": "https://github.com/re-knownout/control-panel/issues"
     },
-    "homepage": "https://github.com/re-knownout/interface#readme",
+    "homepage": "https://github.com/re-knownout/control-panel#readme",
     "devDependencies": {
+        "@knownout/interface": "^0.0.3",
+        "@knownout/lib": "^0.0.8",
         "@testing-library/react": "^12.1.4",
         "@types/jest": "^27.4.1",
         "@types/react": "^17.0.41",
