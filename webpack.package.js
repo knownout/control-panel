@@ -7,13 +7,13 @@ const packageConfig = Object.assign(defaultConfig, {
         path: path.resolve(__dirname, "package", "dist"),
         filename: "[name].js",
         library: {
-            name: "control-panel",
+            name: "ControlPanel",
             type: "umd"
         }
     },
 
     entry: {
-        "control-panel": path.resolve(__dirname, "package", "control-panel")
+        "ControlPanel": path.resolve(__dirname, "package", "ControlPanel")
     },
 
     plugins: [],
@@ -43,6 +43,16 @@ const packageConfig = Object.assign(defaultConfig, {
             commonjs: "react",
             commonjs2: "react",
             amd: "react"
+        },
+        "react-router-dom": {
+            commonjs: "react-router-dom",
+            commonjs2: "react-router-dom",
+            amd: "react-router-dom"
+        },
+        "react-router": {
+            commonjs: "react-router",
+            commonjs2: "react-router",
+            amd: "react-router"
         }
     }
 });

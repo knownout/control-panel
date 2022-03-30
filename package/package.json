@@ -30,6 +30,8 @@
         "@heroicons/react": "^1.0.6",
         "@knownout/interface": "^0.0.9",
         "@knownout/lib": "^0.0.8",
+        "react-router": "^6.2.2",
+        "react-router-dom": "^6.2.2",
         "react": "^17.0.2",
         "recoil": "^0.6.1"
     }

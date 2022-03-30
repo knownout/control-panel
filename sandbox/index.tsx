@@ -2,67 +2,58 @@ import React from "react";
 import ReactDOM from "react-dom";
 
 import "./styles.scss";
-import ControlPanel from "../package/control-panel";
-import { IControlPanelExtension } from "../package/src/extensions/typings";
+import ControlPanel from "../package/ControlPanel";
 import { RecoilRoot } from "recoil";
+import { IControlPanelExtension } from "../package/global/ExtensionTypes";
+import { IControlPanelAuthenticationMechanism, TStoredUserData } from "../package/global/AuthenticationTypes";
 
-class MaterialExtension implements IControlPanelExtension<any, any>
+class MaterialsExtension implements IControlPanelExtension<any, any>
 {
-    readonly name = "Материалы";
+    public name = "Материалы";
+    public version = "1.0.0-rc";
 
-    readonly version = "1.0.0";
-
-    public previewObjectRequest (from: number, limit: number): Promise<any[]> {
+    public requireObjectsPreview (offset: number, limit: number): any[] {
         return null as any;
     }
 
-    public objectSearch (query: string): Promise<any[]> {
+    public requireObjectPreviewByKey (key: string): any {
         return null as any;
     }
 
-    public objectDataRequest (identifier: string): Promise<any> {
+    public requireObjectsPreviewByQuery (query: string, limit: number): any[] {
         return null as any;
     }
 
-    public updateObjectData (identifier: string, objectData: any): Promise<boolean> {
+    public requireObjectContent (key: string): any {
         return null as any;
     }
 
-    public removeObject (identifier: string): Promise<boolean> {
+    public removeObject (key: string): Promise<boolean> {
         return null as any;
+    }
+
+    public renderContentView (content: any): JSX.Element {
+        return <div>Hello world</div>;
     }
 }
 
-class FilesExtension implements IControlPanelExtension<any, any>
+class AuthenticationMechanism implements IControlPanelAuthenticationMechanism
 {
-    readonly name = "Файлы";
+    public storage = sessionStorage;
 
-    readonly version = "1.0.0";
-
-    public previewObjectRequest (from: number, limit: number): Promise<any[]> {
+    public requireCachedUserData (): TStoredUserData | false {
         return null as any;
     }
 
-    public objectSearch (query: string): Promise<any[]> {
-        return null as any;
-    }
-
-    public objectDataRequest (identifier: string): Promise<any> {
-        return null as any;
-    }
-
-    public updateObjectData (identifier: string, objectData: any): Promise<boolean> {
-        return null as any;
-    }
-
-    public removeObject (identifier: string): Promise<boolean> {
-        return null as any;
+    public requireServerAuthentication (userData: TStoredUserData): Promise<boolean> {
+        return true as any;
     }
 }
 
 function App () {
     return <RecoilRoot>
-        <ControlPanel extensions={ [ new MaterialExtension(), new FilesExtension() ] } />
+        <ControlPanel extensions={ [ new MaterialsExtension() ] } authentication={ new AuthenticationMechanism() }
+                      location={ "/control-panel" } />
     </RecoilRoot>;
 }
 
