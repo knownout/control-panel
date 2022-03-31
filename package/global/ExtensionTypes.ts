@@ -73,6 +73,13 @@ export interface IControlPanelExtension<ObjectPreview, ObjectContent, Key = stri
      * @return {JSX.Element} React element.
      */
     renderContentView (content: ObjectContent): JSX.Element;
+
+    /**
+     * Renderer for object preview element.
+     * @param {ObjectPreview} preview object preview data.
+     * @return {JSX.Element} React element.
+     */
+    renderObjectPreview (preview: ObjectPreview): JSX.Element;
 }
 
 export interface IControlPanelScreenExtension extends IControlPanelExtensionCore

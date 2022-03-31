@@ -1,0 +1,74 @@
+/*!
+ * Copyright (c) 2022 Alexandr <re-knownout> knownout@hotmail.com
+ * Licensed under the GNU Affero General Public License v3.0 License (AGPL-3.0)
+ * https://github.com/re-knownout/lib
+ */
+
+@use "../../scss/colors";
+
+div.authentication-form {
+    position: relative;
+    display: flex;
+
+    flex-direction: column;
+
+    max-width: 320px;
+    color: #333;
+    gap: 10px;
+
+    h1, p { margin: 0; user-select: none; }
+
+    p { opacity: .75; }
+
+    button { width: fit-content; }
+
+    div.interface.input {
+        width: 100%;
+
+        input, div.input-holder { width: 100%; }
+    }
+
+    div.recaptcha-hint {
+        font-size: 13px;
+        position: relative;
+
+        user-select: none;
+        opacity: .75;
+
+        span {
+            line-height: 23px;
+
+            position: relative;
+            padding: 3px;
+            border-radius: 3px;
+
+            background: rgba(#000, .08);
+        }
+
+        div.recaptcha-links {
+            position: relative;
+            display: flex;
+
+            flex-wrap: wrap;
+            margin-top: 5px;
+
+            gap: 5px;
+
+            a {
+                position: relative;
+                display: block;
+
+                padding: 3px;
+                transition: 100ms ease all;
+                color: darken(colors.$green-dark, 12%);
+
+                border-radius: 3px;
+                background: rgba(colors.$green-light, .25);
+
+                &:hover {
+                    background: rgba(colors.$green-light, .35);
+                }
+            }
+        }
+    }
+}

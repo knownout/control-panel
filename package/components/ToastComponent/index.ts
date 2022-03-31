@@ -4,4 +4,4 @@
  * https://github.com/re-knownout/lib
  */
 
-export { default, loaderComponentState } from "./LoaderComponent";
+export { default, ToastComponentContext } from "./ToastComponent";

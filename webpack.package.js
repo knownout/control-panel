@@ -53,6 +53,11 @@ const packageConfig = Object.assign(defaultConfig, {
             commonjs: "react-router",
             commonjs2: "react-router",
             amd: "react-router"
+        },
+        "react-dom": {
+            commonjs: "react-dom",
+            commonjs2: "react-dom",
+            amd: "react-dom"
         }
     }
 });

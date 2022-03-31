@@ -6,19 +6,24 @@
 
 import "./ControlPanel.scss";
 
-import React, { useLayoutEffect, useRef } from "react";
+import React, { createContext, useLayoutEffect, useRef } from "react";
 import { IControlPanelExtension, IControlPanelScreenExtension } from "./global/ExtensionTypes";
-import { IControlPanelAuthenticationMechanism } from "./global/AuthenticationTypes";
-import { RecoilRoot, useRecoilState } from "recoil";
-import LoaderComponent, { LoaderComponentState } from "./components/LoaderComponent/LoaderComponent";
-import { classNames } from "@knownout/lib";
+import { IControlPanelAuthenticator } from "./global/AuthenticationTypes";
+import { RecoilRoot } from "recoil";
+import LoaderComponent, { loaderComponentState } from "./components/LoaderComponent";
+import { classNames, limitNumber } from "@knownout/lib";
 import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import PopupComponent from "./components/PopupComponent";
+import useRecoilStateObject from "./hooks/use-recoil-state-object";
+import ToastComponent from "./components/ToastComponent/ToastComponent";
+import useExtensionsObject from "./hooks/use-extensions-object";
+import AuthenticationComponent from "./components/AuthenticationComponent";
 
 interface IControlPanelProps
 {
     extensions: IControlPanelExtension<unknown, unknown>[];
 
-    authentication: IControlPanelAuthenticationMechanism;
+    authenticator: IControlPanelAuthenticator;
 
     location: string;
 
@@ -27,25 +32,47 @@ interface IControlPanelProps
     recaptchaPublicToken?: string;
 }
 
-async function useInitialAuthentication (authentication: IControlPanelAuthenticationMechanism) {
-    const cachedContent = authentication.requireCachedUserData();
+async function useInitialAuthentication (authenticator: IControlPanelAuthenticator) {
+    const cachedContent = authenticator.requireCachedAccountData();
     if (!cachedContent) return false;
 
-    return await authentication.requireServerAuthentication(cachedContent);
+    const response = await authenticator.requireServerAuthentication(cachedContent);
+    if (!response) authenticator.removeCachedAccountData();
+
+    return response;
 }
+
+interface IControlPanelRootContext
+{
+    extensions: { [key: string]: IControlPanelExtension<unknown, unknown> };
+
+    screenExtensions: { [key: string]: IControlPanelScreenExtension };
+
+    authenticator: IControlPanelAuthenticator;
+
+    recaptchaPublicToken: string;
+}
+
+export const ControlPanelRootContext = createContext<Partial<IControlPanelRootContext>>({});
 
 function ControlPanelRoot (props: IControlPanelProps) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const [ loading, setLoading ] = useRecoilState(LoaderComponentState.loadingState);
-    const [ error, setError ] = useRecoilState(LoaderComponentState.errorState);
+    const { setState: setLoading } = useRecoilStateObject(loaderComponentState);
     const authenticationResult = useRef<boolean | null>(null);
+
+    const { authenticator, recaptchaPublicToken } = props;
+
+    const screenExtensions = props.screenExtensions ? useExtensionsObject(props.screenExtensions) : {};
+    const extensions = useExtensionsObject(props.extensions);
 
     useLayoutEffect(() => {
         setLoading(true);
 
-        useInitialAuthentication(props.authentication).then(response => {
+        useInitialAuthentication(props.authenticator).then(response => {
+            const startTime = Date.now();
+
             const lastPathnamePart = location.pathname.split("/").slice(-1)[0];
 
             if (!response && lastPathnamePart != "auth")
@@ -56,23 +83,33 @@ function ControlPanelRoot (props: IControlPanelProps) {
 
             authenticationResult.current = response;
 
-            setTimeout(() => setError("sasat"), 600);
-            // setLoading(false);
+            const timeoutLeft = limitNumber(400 - (Date.now() - startTime), { bottom: 0 });
+            setTimeout(() => setLoading(false), timeoutLeft);
         });
-    }, []);
+    }, [ location.pathname ]);
 
     const cplRootClassName = classNames("cpl-root");
     return <main className={ cplRootClassName }>
+        <PopupComponent />
         <LoaderComponent />
-        <Routes>
-            <Route path="/auth" element={ <span>Auth form</span> } />
-            <Route path="*" element={ <span>CPL Form handler</span> } />
-        </Routes>
+
+        <ControlPanelRootContext.Provider value={ {
+            extensions, screenExtensions, authenticator, recaptchaPublicToken
+        } }>
+            <Routes>
+                <Route path="/auth" element={ <AuthenticationComponent /> } />
+                <Route path="*" element={ <span>CPL Form handler</span> } />
+            </Routes>
+        </ControlPanelRootContext.Provider>
     </main>;
 }
 
 export default function (props: IControlPanelProps) {
     return <RecoilRoot>
-        <Router basename={ props.location }><ControlPanelRoot { ...props } /></Router>
+        <Router basename={ props.location }>
+            <ToastComponent>
+                <ControlPanelRoot { ...props } />
+            </ToastComponent>
+        </Router>
     </RecoilRoot>;
 }

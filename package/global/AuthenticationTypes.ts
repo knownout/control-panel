@@ -4,40 +4,41 @@
  * https://github.com/re-knownout/lib
  */
 
-export type TStoredUserData = {
+export type TAccountData = {
     /** User login */
     username: string;
-
-    /** User real name */
-    fullname: string;
 
     /** Raw user password */
     password: string;
 };
 
-export type THashedUserData = {
-    /** User login */
-    username: string;
-
-    /** User hashed password */
-    hash: string;
-}
-
-export interface IControlPanelAuthenticationMechanism
+export interface IControlPanelAuthenticator
 {
     /** Data storage type. */
     storage: Storage;
 
     /**
      * Send authentication request to the server.
-     * @param {TStoredUserData} userData user data to send.
+     * @param {TAccountData} userData user data to send.
+     * @param recaptchaToken recaptcha token generated with Google api.
      * @return {Promise<boolean>} authentication result.
      */
-    requireServerAuthentication (userData: TStoredUserData): Promise<boolean>;
+    requireServerAuthentication (userData: TAccountData, recaptchaToken?: string): Promise<boolean>;
 
     /**
      * Require cached in specific storage user data.
-     * @return {TStoredUserData | false} data parsing result.
+     * @return {TAccountData | false} data parsing result.
      */
-    requireCachedUserData (): TStoredUserData | false;
+    requireCachedAccountData (): TAccountData | false;
+
+    /**
+     * Update cached user data in the storage.
+     * @param {TAccountData} cachedUserData new user data to cache.
+     */
+    cacheAccountData (cachedUserData: TAccountData): void;
+
+    /**
+     * Remove cached data from storage.
+     */
+    removeCachedAccountData (): void;
 }

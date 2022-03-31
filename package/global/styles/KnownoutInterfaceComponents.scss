@@ -1,0 +1,189 @@
+/*!
+ * Copyright (c) 2022 Alexandr <re-knownout> knownout@hotmail.com
+ * Licensed under the GNU Affero General Public License v3.0 License (AGPL-3.0)
+ * https://github.com/re-knownout/lib
+ */
+
+@use "../../scss/colors";
+
+button.interface.button {
+    font-weight: 500;
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    padding: 20px;
+
+    cursor: pointer;
+    transition: 100ms ease all;
+
+    opacity: .95;
+    color: #FFF;
+
+    border: none;
+    border-radius: 10px;
+
+    background: colors.$green-gradient;
+
+    &:hover {
+        opacity: 1;
+    }
+
+    &:focus { box-shadow: 0 0 0 3px rgba(colors.$green-light, .4); }
+
+    &::before {
+        position: relative;
+        display: block;
+
+        box-sizing: border-box;
+        width: 0;
+        height: 0;
+
+        content: "";
+
+        transition: 200ms ease all;
+        border: 0 solid rgba(#FFF, .3);
+
+        border-top-color: #FFF;
+        border-radius: 50%;
+    }
+
+    &.loading {
+        div.icon-holder, div.icon-holder svg {
+            width: 0;
+            height: 0;
+
+            margin-right: 0;
+        }
+
+        &::before {
+            width: 16px;
+            height: 16px;
+
+            margin-right: 8px;
+            animation: 300ms linear infinite loader-spin;
+
+            border-width: 3px;
+        }
+    }
+
+    div.icon-holder {
+        width: 18px;
+        height: 18px;
+
+        margin-right: 8px;
+        transition: 200ms ease all;
+
+        svg { transition: inherit; }
+    }
+
+    @keyframes loader-spin {
+        from { transform: rotate(0); }
+
+        to { transform: rotate(360deg) }
+    }
+}
+
+div.interface.input {
+    position: relative;
+    display: flex;
+
+    flex-direction: row;
+
+    width: fit-content;
+
+    transition: 100ms ease all;
+    border-radius: 10px;
+
+    gap: 10px;
+
+    div.icon-holder {
+        position: relative;
+        display: grid;
+
+        width: 59px;
+        min-width: 59px;
+
+        height: 59px;
+        min-height: 59px;
+
+        user-select: none;
+
+        transition: inherit;
+
+        border-radius: inherit;
+        background: #FFF;
+
+        place-items: center;
+
+        svg {
+            width: 28px;
+            height: 28px;
+
+            color: #555;
+        }
+    }
+
+    div.input-holder {
+        position: relative;
+        display: block;
+
+        width: fit-content;
+        transition: inherit;
+
+        border-radius: inherit;
+    }
+
+    input {
+        padding: 20px;
+        transition: inherit;
+        color: #222;
+
+        border: none;
+
+        border-radius: 10px;
+
+        &[type="password"] {
+            color: #555;
+        }
+
+        &::selection {
+            background-color: rgba(colors.$green-light, .3);
+        }
+    }
+
+    &.has-value {
+        input {
+            padding-top: 28px;
+            padding-bottom: 12px;
+        }
+
+        div.placeholder {
+            font-size: 13px;
+            transform: translateY(-8px);
+        }
+    }
+
+    div.placeholder {
+        position: absolute;
+
+        width: 100%;
+        height: 100%;
+
+        padding: 20px;
+        user-select: none;
+
+        transition: inherit;
+        pointer-events: none;
+        opacity: .75;
+
+        color: #333;
+    }
+
+    &:focus-within {
+        div.input-holder, div.icon-holder {
+            box-shadow: 0 0 0 3px rgba(colors.$green-light, .4);
+        }
+    }
+}

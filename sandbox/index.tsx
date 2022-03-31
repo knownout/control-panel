@@ -5,7 +5,8 @@ import "./styles.scss";
 import ControlPanel from "../package/ControlPanel";
 import { RecoilRoot } from "recoil";
 import { IControlPanelExtension } from "../package/global/ExtensionTypes";
-import { IControlPanelAuthenticationMechanism, TStoredUserData } from "../package/global/AuthenticationTypes";
+import { IControlPanelAuthenticator, TAccountData } from "../package/global/AuthenticationTypes";
+import { CacheController } from "@knownout/lib";
 
 class MaterialsExtension implements IControlPanelExtension<any, any>
 {
@@ -35,25 +36,41 @@ class MaterialsExtension implements IControlPanelExtension<any, any>
     public renderContentView (content: any): JSX.Element {
         return <div>Hello world</div>;
     }
+
+    public renderObjectPreview (preview: any): JSX.Element {
+        return <div>Hello preview</div>;
+    }
 }
 
-class AuthenticationMechanism implements IControlPanelAuthenticationMechanism
+class Authenticator implements IControlPanelAuthenticator
 {
     public storage = sessionStorage;
 
-    public requireCachedUserData (): TStoredUserData | false {
-        return null as any;
+    private readonly storageKey = "accountData";
+    private readonly cacheController = new CacheController(this.storage);
+
+    public requireCachedAccountData (): TAccountData | false {
+        return this.cacheController.getItem<TAccountData>(this.storageKey);
     }
 
-    public requireServerAuthentication (userData: TStoredUserData): Promise<boolean> {
-        return true as any;
+    public requireServerAuthentication (userData: TAccountData): Promise<boolean> {
+        return new Promise<boolean>(resolve => setTimeout(() => resolve(true), 1000));
+    }
+
+    public cacheAccountData (cachedUserData: TAccountData) {
+        this.cacheController.setItem(this.storageKey, cachedUserData);
+    }
+
+    public removeCachedAccountData () {
+        this.cacheController.removeItem(this.storageKey);
     }
 }
 
 function App () {
     return <RecoilRoot>
-        <ControlPanel extensions={ [ new MaterialsExtension() ] } authentication={ new AuthenticationMechanism() }
-                      location={ "/control-panel" } />
+        <ControlPanel extensions={ [ new MaterialsExtension() ] } authenticator={ new Authenticator() }
+                      location={ "/control-panel" }
+                      recaptchaPublicToken={ "6LfML98dAAAAAAOl4xfqwdf4qSlyGIHiNx71wvDd" } />
     </RecoilRoot>;
 }
 

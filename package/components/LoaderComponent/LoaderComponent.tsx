@@ -9,47 +9,26 @@ import { atom, useRecoilValue } from "recoil";
 import { classNames } from "@knownout/lib";
 
 import "./LoaderComponent.scss";
-import { ShieldExclamationIcon } from "@heroicons/react/solid";
-import { Button } from "@knownout/interface";
-import { HomeIcon } from "@heroicons/react/outline";
+import { createPortal } from "react-dom";
 
-export const LoaderComponentState = {
-    loadingState: atom({
-        key: "LoaderComponent.LoadingState",
-        default: true
-    }),
+/** Component state */
+export const loaderComponentState = atom({
+    key: "loaderComponentState",
+    default: true
+});
 
-    errorState: atom<boolean | string | undefined>({
-        key: "LoaderComponent.ErrorState",
-        default: false
-    })
-};
-
-const ErrorHandlerComponent = (props: { error: string | boolean | undefined }) => {
-    const errorHandlerClassName = classNames("screen", "error", { show: Boolean(props.error) });
-
-    return <div className={ errorHandlerClassName }>
-        <div>
-            <div className="content">
-                <h1><ShieldExclamationIcon /> Произошла ошибка</h1>
-                <p>При обработке текущего запроса произошла непредвиденная ошибка.</p>
-                <p>Если вы уверены, что это ошибка модуля, свяжитесь с разработчиком.</p>
-                <span className="error-content">
-                    Данные ошибки: { props.error || "unknown" }
-                </span>
-            </div>
-            <Button icon={ <HomeIcon /> }>На главную</Button>
-        </div>
-    </div>;
-};
-
+/**
+ * React component to provide a loading screen, controlled by recoil state.
+ * @internal
+ */
 export default memo(() => {
-    const loading = useRecoilValue(LoaderComponentState.loadingState);
-    const error = useRecoilValue(LoaderComponentState.errorState);
+    const loading = useRecoilValue(loaderComponentState);
 
-    const loadingScreenClassName = classNames("screen loading", { show: loading });
-    return <div className="loader-component">
-        <div className={ loadingScreenClassName } children={ <i className="loading-spinner" /> } />
-        <ErrorHandlerComponent error={ error } />
+    const loaderClassName = classNames("loader-component", { open: loading });
+    const component = <div className={ loaderClassName }>
+        <i className="loading-spinner" />
     </div>;
+
+    // Create a portal to add a loading screen after other elements.
+    return createPortal(component, document.body);
 });
