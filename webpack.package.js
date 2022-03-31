@@ -34,6 +34,11 @@ const packageConfig = Object.assign(defaultConfig, {
             commonjs2: "@knownout/interface",
             amd: "@knownout/interface"
         },
+        "crypto-js": {
+            commonjs: "crypto-js",
+            commonjs2: "crypto-js",
+            amd: "crypto-js"
+        },
         "recoil": {
             commonjs: "recoil",
             commonjs2: "recoil",

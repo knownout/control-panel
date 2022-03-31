@@ -6,10 +6,10 @@
 
 div.toast-component {
     position: fixed;
-    top: 0;
-    left: 0;
-
     display: grid;
+    top: 0;
+
+    left: 0;
 
     width: 100%;
     height: 100%;
@@ -27,38 +27,38 @@ div.toast-component {
         pointer-events: all;
 
         gap: 10px;
+    }
 
-        div.toast-message {
-            position: relative;
-            display: block;
+    div.toast-message {
+        position: relative;
+        display: block;
 
-            width: fit-content;
-            max-width: 240px;
+        width: fit-content;
+        max-width: 240px;
 
-            & > div {
-                padding: 20px;
-                cursor: pointer;
+        & > div {
+            padding: 20px;
+            cursor: pointer;
 
-                user-select: none;
-                transition: 100ms ease all;
-                opacity: 1;
-                border-radius: 10px;
+            user-select: none;
+            transition: 100ms ease all;
+            opacity: 1;
+            border-radius: 10px;
 
-                background: #EEE;
+            background: #EEE;
 
-                &:hover {
-                    transform: translateX(-5px);
-                    opacity: .75;
-                }
+            &:hover {
+                transform: translateX(-5px);
+                opacity: .75;
             }
+        }
 
-            &:not(.enter) > div {
-                font-size: 0;
-                padding: 0;
+        &:not(.enter) > div {
+            font-size: 0;
+            padding: 0;
 
-                transform: translateX(-10px);
-                opacity: 0;
-            }
+            transform: translateX(-10px);
+            opacity: 0;
         }
     }
 }

@@ -8,8 +8,8 @@ export type TAccountData = {
     /** User login */
     username: string;
 
-    /** Raw user password */
-    password: string;
+    /** Hashed user password */
+    hash: string;
 };
 
 export interface IControlPanelAuthenticator
@@ -20,10 +20,10 @@ export interface IControlPanelAuthenticator
     /**
      * Send authentication request to the server.
      * @param {TAccountData} userData user data to send.
-     * @param recaptchaToken recaptcha token generated with Google api.
+     * @param recaptchaPublicKey recaptcha public key.
      * @return {Promise<boolean>} authentication result.
      */
-    requireServerAuthentication (userData: TAccountData, recaptchaToken?: string): Promise<boolean>;
+    requireServerAuthentication (userData: TAccountData, recaptchaPublicKey?: string): Promise<boolean>;
 
     /**
      * Require cached in specific storage user data.

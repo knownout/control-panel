@@ -4,65 +4,95 @@
  * https://github.com/re-knownout/lib
  */
 
-import "./ControlPanel.scss";
-
-import React, { createContext, useLayoutEffect, useRef } from "react";
-import { IControlPanelExtension, IControlPanelScreenExtension } from "./global/ExtensionTypes";
-import { IControlPanelAuthenticator } from "./global/AuthenticationTypes";
-import { RecoilRoot } from "recoil";
-import LoaderComponent, { loaderComponentState } from "./components/LoaderComponent";
 import { classNames, limitNumber } from "@knownout/lib";
-import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import PopupComponent from "./components/PopupComponent";
-import useRecoilStateObject from "./hooks/use-recoil-state-object";
-import ToastComponent from "./components/ToastComponent/ToastComponent";
-import useExtensionsObject from "./hooks/use-extensions-object";
-import AuthenticationComponent from "./components/AuthenticationComponent";
 
-interface IControlPanelProps
+import React, { createContext, ForwardedRef, forwardRef, memo, useLayoutEffect, useRef } from "react";
+import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { RecoilRoot } from "recoil";
+import AuthenticationComponent from "./components/AuthenticationComponent";
+import ErrorBoundary from "./components/ErrorBoundary";
+import FallbackComponent from "./components/FallbackComponent";
+import LoaderComponent, { loaderComponentState } from "./components/LoaderComponent";
+import PopupComponent, { popupComponentState } from "./components/PopupComponent";
+import ToastComponent from "./components/ToastComponent/ToastComponent";
+import "./ControlPanel.scss";
+import { IControlPanelAuthenticator } from "./global/AuthenticationTypes";
+import { IControlPanelExtension, IControlPanelScreenExtension } from "./global/ExtensionTypes";
+import ControlPanelLocale from "./global/LocaleTypes";
+import PopupOptions from "./global/state/PopupOptions";
+import useExtensionsObject from "./hooks/use-extensions-object";
+import useInitialAuthentication from "./hooks/use-initial-authentication";
+import useRecoilStateObject from "./hooks/use-recoil-state-object";
+
+export interface IControlPanelProps
 {
+    /** Control panel extensions array. */
     extensions: IControlPanelExtension<unknown, unknown>[];
 
+    /** Authentication extension. */
     authenticator: IControlPanelAuthenticator;
 
+    /** Control panel base location (for a router). */
     location: string;
 
+    /** Control panel localization objects. */
+    locale: {
+        /** Common popup state text localization. */
+        popup: ControlPanelLocale.ICommonPopupStatesLocale,
+
+        /** Authentication locale. */
+        authenticator: ControlPanelLocale.IAuthenticatorLocale
+    };
+
+    /** Control panel screen extensions array. */
     screenExtensions?: IControlPanelScreenExtension[];
 
-    recaptchaPublicToken?: string;
+    /** Define recaptcha public key to execute all dangerous
+     * tasks with recaptcha protection. */
+    recaptchaPublicKey?: string;
 }
 
-async function useInitialAuthentication (authenticator: IControlPanelAuthenticator) {
-    const cachedContent = authenticator.requireCachedAccountData();
-    if (!cachedContent) return false;
-
-    const response = await authenticator.requireServerAuthentication(cachedContent);
-    if (!response) authenticator.removeCachedAccountData();
-
-    return response;
-}
-
+/**
+ * Global control panel properties storage.
+ */
 interface IControlPanelRootContext
 {
+    /** Array of provided extensions. */
     extensions: { [key: string]: IControlPanelExtension<unknown, unknown> };
 
+    /** Array of provided screen extensions. */
     screenExtensions: { [key: string]: IControlPanelScreenExtension };
 
+    /** Authentication extension. */
     authenticator: IControlPanelAuthenticator;
 
-    recaptchaPublicToken: string;
+    /** Define recaptcha public key to execute all dangerous
+     * tasks with recaptcha protection. */
+    recaptchaPublicKey: string;
+
+    /** Control panel localization objects. */
+    locale: IControlPanelProps["locale"];
 }
 
+/**
+ * Global control panel properties storage.
+ */
 export const ControlPanelRootContext = createContext<Partial<IControlPanelRootContext>>({});
 
-function ControlPanelRoot (props: IControlPanelProps) {
+/**
+ * Control panel internal component.
+ * @internal
+ */
+const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.LegacyRef<HTMLDivElement> }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
     const { setState: setLoading } = useRecoilStateObject(loaderComponentState);
+    const { setState: setPopupData } = useRecoilStateObject(popupComponentState);
+
     const authenticationResult = useRef<boolean | null>(null);
 
-    const { authenticator, recaptchaPublicToken } = props;
+    const { authenticator, recaptchaPublicKey, locale } = props;
 
     const screenExtensions = props.screenExtensions ? useExtensionsObject(props.screenExtensions) : {};
     const extensions = useExtensionsObject(props.extensions);
@@ -70,9 +100,8 @@ function ControlPanelRoot (props: IControlPanelProps) {
     useLayoutEffect(() => {
         setLoading(true);
 
-        useInitialAuthentication(props.authenticator).then(response => {
+        useInitialAuthentication(props.authenticator, recaptchaPublicKey).then(response => {
             const startTime = Date.now();
-
             const lastPathnamePart = location.pathname.split("/").slice(-1)[0];
 
             if (!response && lastPathnamePart != "auth")
@@ -85,31 +114,42 @@ function ControlPanelRoot (props: IControlPanelProps) {
 
             const timeoutLeft = limitNumber(400 - (Date.now() - startTime), { bottom: 0 });
             setTimeout(() => setLoading(false), timeoutLeft);
-        });
+        }).catch(error => setPopupData(PopupOptions.moduleCriticalFailure(
+            error.message || String(error),
+            locale.popup.ModuleCriticalFailure
+        )));
     }, [ location.pathname ]);
 
     const cplRootClassName = classNames("cpl-root");
-    return <main className={ cplRootClassName }>
-        <PopupComponent />
+    return <main className={ cplRootClassName } ref={ props.rootRef }>
         <LoaderComponent />
+        <PopupComponent />
 
         <ControlPanelRootContext.Provider value={ {
-            extensions, screenExtensions, authenticator, recaptchaPublicToken
+            extensions, screenExtensions, authenticator, recaptchaPublicKey, locale
         } }>
-            <Routes>
-                <Route path="/auth" element={ <AuthenticationComponent /> } />
-                <Route path="*" element={ <span>CPL Form handler</span> } />
-            </Routes>
+            <ErrorBoundary FallbackComponent={ FallbackComponent }>
+                <Routes>
+                    <Route path="/auth" element={ <AuthenticationComponent /> } />
+                    <Route path="*" element={ <span>CPL Form handler</span> } />
+                </Routes>
+            </ErrorBoundary>
         </ControlPanelRootContext.Provider>
     </main>;
-}
+});
 
-export default function (props: IControlPanelProps) {
+/**
+ * ### Custom website control panel managed by user-created add-ons.
+ *
+ * _Supports full interface localization using `locale` property._
+ *
+ * _Common extensions supplies together with a module._
+ */
+export default memo(forwardRef((props: IControlPanelProps, ref: ForwardedRef<HTMLDivElement>) => {
+    // Provide recoil root, router and toast component context
     return <RecoilRoot>
         <Router basename={ props.location }>
-            <ToastComponent>
-                <ControlPanelRoot { ...props } />
-            </ToastComponent>
+            <ToastComponent children={ <ControlPanelRoot { ...props } rootRef={ ref } /> } />
         </Router>
     </RecoilRoot>;
-}
+}));

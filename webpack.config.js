@@ -6,6 +6,7 @@ const path = require("path");
 module.exports = {
     mode: "development",
     target: "web",
+    devtool: "eval-source-map",
 
     output: {
         path: path.resolve(__dirname, "dist"),

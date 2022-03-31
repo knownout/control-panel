@@ -4,12 +4,12 @@
  * https://github.com/re-knownout/lib
  */
 
-import React, { memo } from "react";
-import { atom, useRecoilValue } from "recoil";
 import { classNames } from "@knownout/lib";
+import React, { memo } from "react";
+import { createPortal } from "react-dom";
+import { atom, useRecoilValue } from "recoil";
 
 import "./LoaderComponent.scss";
-import { createPortal } from "react-dom";
 
 /** Component state */
 export const loaderComponentState = atom({
@@ -29,6 +29,6 @@ export default memo(() => {
         <i className="loading-spinner" />
     </div>;
 
-    // Create a portal to add a loading screen after other elements.
+    // Create a portal to avoid z-index usage.
     return createPortal(component, document.body);
 });

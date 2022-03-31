@@ -13,7 +13,9 @@ div.authentication-form {
     flex-direction: column;
 
     max-width: 320px;
+    transition: 100ms ease all;
     color: #333;
+
     gap: 10px;
 
     h1, p { margin: 0; user-select: none; }
@@ -29,16 +31,16 @@ div.authentication-form {
     }
 
     div.recaptcha-hint {
-        font-size: 13px;
         position: relative;
+        font-size: 13px;
 
         user-select: none;
         opacity: .75;
 
         span {
-            line-height: 23px;
-
             position: relative;
+
+            line-height: 23px;
             padding: 3px;
             border-radius: 3px;
 

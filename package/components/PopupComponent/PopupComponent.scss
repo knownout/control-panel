@@ -6,12 +6,12 @@
 
 @use "../../scss/colors";
 
-div.popover-component {
+div.popup-component {
     position: fixed;
-    top: 0;
-    left: 0;
-
     display: grid;
+    top: 0;
+
+    left: 0;
     overflow: hidden;
 
     width: 100%;
@@ -29,7 +29,7 @@ div.popover-component {
         opacity: 0;
     }
 
-    div.popover-content-wrapper {
+    div.popup-content-wrapper {
         position: relative;
         display: flex;
 
@@ -39,7 +39,7 @@ div.popover-component {
         gap: 10px;
     }
 
-    div.popover-content-holder {
+    div.popup-content-holder {
         padding: 20px;
         border-radius: 10px;
 
@@ -48,10 +48,10 @@ div.popover-component {
         h1, p { margin: 0; }
 
         h1 {
-            font-size: 28px;
             position: relative;
-
             display: flex;
+
+            font-size: 28px;
             align-items: center;
 
             flex-direction: row;
@@ -85,13 +85,13 @@ div.popover-component {
             }
         }
 
-        & > span {
-            font-size: 15px;
-
-            font-weight: 500;
+        span {
             position: relative;
 
             display: flex;
+            font-size: 15px;
+
+            font-weight: 500;
             align-items: center;
 
             margin-top: 20px;
@@ -101,12 +101,15 @@ div.popover-component {
 
             svg {
                 width: 15px;
+                min-width: 15px;
+
                 height: 15px;
+                min-height: 15px;
             }
         }
     }
 
-    div.popover-buttons-holder {
+    div.popup-buttons-holder {
         position: relative;
         display: flex;
 

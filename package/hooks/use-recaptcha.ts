@@ -15,18 +15,23 @@ interface Recaptcha
 }
 
 /**
- * Function for requiring valid recaptcha client token
+ * Function for requiring valid recaptcha client token.
+ * @param {string} recaptchaPublicKey recaptcha public key to process.
+ * @param {string} action action type.
+ * @return {Promise<string>} generated recaptcha token.
  */
-export default function useRecaptcha (recaptchaPublicToken: string, action = "login"): Promise<string> {
-    const recaptcha = (window as any).grecaptcha as Recaptcha;
+export default function useRecaptcha (recaptchaPublicKey: string, action = "login"): Promise<string> {
+    let recaptcha = (window as any).grecaptcha as Recaptcha;
 
     return new Promise((resolve, reject) => {
-        if (!recaptchaPublicToken)
+        if (!recaptchaPublicKey)
             return reject("Cannot find recaptcha public key. Does ControlPanel context provided?");
 
         // Check if recaptcha instance exist.
         let iterations = 0;
         const interval = setInterval(() => {
+            recaptcha = (window as any).grecaptcha as Recaptcha;
+
             if (iterations > 100) {
                 clearInterval(interval);
                 return reject("Can not find recaptcha instance");
@@ -43,7 +48,7 @@ export default function useRecaptcha (recaptchaPublicToken: string, action = "lo
                 if (!("execute" in recaptcha)) return reject("Invalid recaptcha instance registered");
 
                 // Get client token.
-                recaptcha.execute(recaptchaPublicToken, { action })
+                recaptcha.execute(recaptchaPublicKey, { action })
                     .then(token => resolve(token));
             });
         }, 100);

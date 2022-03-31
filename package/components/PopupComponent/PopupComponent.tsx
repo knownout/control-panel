@@ -4,16 +4,16 @@
  * https://github.com/re-knownout/lib
  */
 
-import React, { memo } from "react";
-import { atom, useRecoilValue } from "recoil";
-import { classNames } from "@knownout/lib";
+import { InformationCircleIcon } from "@heroicons/react/solid";
 import { Button } from "@knownout/interface";
+import { classNames } from "@knownout/lib";
+import React, { memo } from "react";
+import { createPortal } from "react-dom";
+import { atom, useRecoilValue } from "recoil";
 
 import "./PopupComponent.scss";
-import { createPortal } from "react-dom";
-import { InformationCircleIcon } from "@heroicons/react/solid";
 
-type TPopoverButton = {
+type TPopupButton = {
     /** Button text. */
     children: string;
 
@@ -24,7 +24,7 @@ type TPopoverButton = {
     onClick? (target: HTMLButtonElement): void;
 };
 
-interface IPopoverState
+export interface IPopupState
 {
     /** Popup shown state. */
     open: boolean;
@@ -42,11 +42,11 @@ interface IPopoverState
     hintContent?: string;
 
     /** Define buttons to render. */
-    buttons: TPopoverButton[];
+    buttons: TPopupButton[];
 }
 
 /** Popup component state. */
-export const popupComponentState = atom<IPopoverState>({
+export const popupComponentState = atom<IPopupState>({
     key: "PopoverComponentState",
     default: {
         open: false,
@@ -66,11 +66,10 @@ export const popupComponentState = atom<IPopoverState>({
 export default memo(() => {
     const { open, title, titleIcon, textContent, hintContent, buttons } = useRecoilValue(popupComponentState);
 
-    const popoverClassName = classNames("popover-component", { open });
-
+    const popoverClassName = classNames("popup-component", { open });
     const component = <div className={ popoverClassName }>
-        <div className="popover-content-wrapper">
-            <div className="popover-content-holder">
+        <div className="popup-content-wrapper">
+            <div className="popup-content-holder">
                 <h1>{ titleIcon }{ title }</h1>
                 <div className="text-holder">
                     { textContent.map((text, index) => <p children={ text } key={ index + "_PTK" } />) }
@@ -78,7 +77,7 @@ export default memo(() => {
                 { hintContent && <span>{ <InformationCircleIcon /> } { hintContent }</span> }
             </div>
 
-            <div className="popover-buttons-holder">
+            <div className="popup-buttons-holder">
                 { buttons.map((button, index) =>
                     <Button { ...button } key={ index + "_PBK" }>{ button.children }</Button>
                 ) }
@@ -86,5 +85,6 @@ export default memo(() => {
         </div>
     </div>;
 
+    // Create portal to avoid z-index usage.
     return createPortal(component, document.body);
 });

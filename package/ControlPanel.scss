@@ -5,7 +5,7 @@
  */
 
 @import url("https://necolas.github.io/normalize.css/8.0.1/normalize.css");
-@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap");
 
 @import "./global/styles/KnownoutInterfaceComponents";
 
@@ -18,7 +18,7 @@
 
 .disabled {
     pointer-events: none !important;
-    opacity: .5 !important;
+    opacity: .65 !important;
     box-shadow: none !important;
 }
 
@@ -36,10 +36,10 @@ h1 {
 
 main.cpl-root {
     position: fixed;
-    top: 0;
-    left: 0;
-
     display: grid;
+    top: 0;
+
+    left: 0;
 
     overflow: hidden;
     width: 100%;
