@@ -6,6 +6,7 @@ const path = require("path");
 module.exports = {
     mode: "development",
     target: "web",
+    devtool: "eval-source-map",
 
     output: {
         path: path.resolve(__dirname, "dist"),
@@ -15,14 +16,16 @@ module.exports = {
     entry: path.resolve(__dirname, "sandbox", "index"),
 
     resolve: {
-        extensions: [ ".tsx", ".jsx", ".js", ".ts" ],
+        extensions: [ ".tsx", ".jsx", ".js", ".ts" ]
     },
 
     stats: "minimal",
     devServer: {
         host: "0.0.0.0",
         port: 8080,
-        hot: true
+        hot: true,
+
+        historyApiFallback: true
     },
 
     module: {

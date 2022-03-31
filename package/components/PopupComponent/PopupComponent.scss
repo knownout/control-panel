@@ -1,0 +1,127 @@
+/*!
+ * Copyright (c) 2022 Alexandr <re-knownout> knownout@hotmail.com
+ * Licensed under the GNU Affero General Public License v3.0 License (AGPL-3.0)
+ * https://github.com/re-knownout/lib
+ */
+
+@use "../../scss/colors";
+
+div.popup-component {
+    position: fixed;
+    display: grid;
+    top: 0;
+
+    left: 0;
+    overflow: hidden;
+
+    width: 100%;
+    height: 100%;
+
+    user-select: none;
+    transition: 200ms ease all;
+
+    background: rgba(#DDD, .94);
+
+    place-items: center;
+
+    &:not(.open) {
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    div.popup-content-wrapper {
+        position: relative;
+        display: flex;
+
+        flex-direction: column;
+
+        max-width: 420px;
+        gap: 10px;
+    }
+
+    div.popup-content-holder {
+        padding: 20px;
+        border-radius: 10px;
+
+        background: #FFF;
+
+        h1, p { margin: 0; }
+
+        h1 {
+            position: relative;
+            display: flex;
+
+            font-size: 28px;
+            align-items: center;
+
+            flex-direction: row;
+            flex-wrap: wrap;
+
+            //justify-content: center;
+
+            margin-bottom: 10px;
+            opacity: .95;
+            background: colors.$green-gradient;
+
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+
+            gap: 5px;
+        }
+
+        h1 svg {
+            width: 28px;
+            height: 28px;
+
+            color: colors.$green-dark;
+        }
+
+        p {
+            line-height: 21px;
+            color: #333;
+
+            &:not(:last-child) {
+                margin-bottom: 10px;
+            }
+        }
+
+        span {
+            position: relative;
+
+            display: flex;
+            font-size: 15px;
+
+            font-weight: 500;
+            align-items: center;
+
+            margin-top: 20px;
+            opacity: .45;
+
+            gap: 5px;
+
+            svg {
+                width: 15px;
+                min-width: 15px;
+
+                height: 15px;
+                min-height: 15px;
+            }
+        }
+    }
+
+    div.popup-buttons-holder {
+        position: relative;
+        display: flex;
+
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        justify-content: center;
+        padding: 0 20px;
+
+        button:first-child:last-child {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+}

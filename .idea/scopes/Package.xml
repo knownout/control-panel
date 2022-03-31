@@ -1,3 +1,3 @@
 <component name="DependencyValidationManager">
-  <scope name="Package" pattern="file[interface]:package//*" />
+  <scope name="Package" pattern="file[control-panel]:package//*" />
 </component>
