@@ -24,7 +24,6 @@ div.toast-component {
         flex-direction: column-reverse;
 
         padding: 20px;
-        pointer-events: all;
 
         gap: 10px;
     }
@@ -35,6 +34,8 @@ div.toast-component {
 
         width: fit-content;
         max-width: 240px;
+
+        pointer-events: all;
 
         & > div {
             padding: 20px;

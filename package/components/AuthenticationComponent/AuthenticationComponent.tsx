@@ -13,15 +13,14 @@ import { classNames } from "@knownout/lib";
 import sha256 from "crypto-js/sha256";
 
 import React, { memo, useCallback, useContext, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import { ControlPanelRootContext } from "../../ControlPanel";
 
 import { TAccountData } from "../../global/AuthenticationTypes";
 import PopupOptions from "../../global/state/PopupOptions";
+import useLoadingState from "../../hooks/use-loading-state";
+import useMinLoadingTime from "../../hooks/use-min-loading-time";
 import useRecoilStateObject from "../../hooks/use-recoil-state-object";
-
-import { loaderComponentState } from "../LoaderComponent";
 import { popupComponentState } from "../PopupComponent";
 
 import "./AuthenticationComponent.scss";
@@ -30,8 +29,7 @@ import "./AuthenticationComponent.scss";
  * React component to create authentication form.
  * @internal
  */
-export default memo(() => {
-    const navigate = useNavigate();
+export default memo((props: { updateAuthStatus (): void }) => {
     const { authenticator, recaptchaPublicKey, locale } = useContext(ControlPanelRootContext);
 
     const loginComponent = useRef<HTMLInputElement>(null),
@@ -44,8 +42,8 @@ export default memo(() => {
     const [ login, setLogin ] = useState(false);
     const [ password, setPassword ] = useState(false);
 
-    const { setState: setPopupData } = useRecoilStateObject(popupComponentState);
-    const { setState: setLoading } = useRecoilStateObject(loaderComponentState);
+    const { setState: setPopupState } = useRecoilStateObject(popupComponentState);
+    const { startLoading, finishLoading } = useLoadingState();
 
     // Process only if authentication extension and localization provided.
     if (!authenticator) throw new Error("No authenticator extension provided");
@@ -65,8 +63,8 @@ export default memo(() => {
         await authenticator.requireServerAuthentication(accountData, recaptchaPublicKey).then(response => {
 
             // Show popup if not authenticated.
-            if (!response) return setPopupData(PopupOptions.authenticationFailure(() => {
-                setPopupData(popup => Object.assign({}, popup, { open: false }));
+            if (!response) return setPopupState(PopupOptions.authenticationFailure(() => {
+                setPopupState({ open: false });
 
                 if (passwordComponent.current) {
                     passwordComponent.current.value = "";
@@ -76,13 +74,14 @@ export default memo(() => {
             }, locale.popup.AuthenticationFailure));
 
             // Show loader and redirect to title page if authenticated.
-            setLoading(true);
-            setTimeout(() => {
-                authenticator.cacheAccountData(accountData);
-                navigate("/");
-            }, 200);
+            startLoading("auth-wait");
+            setTimeout(() => useMinLoadingTime(() => authenticator.cacheAccountData(accountData))
+                .then(() => {
+                    props.updateAuthStatus();
+                    finishLoading("auth-wait");
+                }), 200);
 
-        }).catch(error => setPopupData(PopupOptions.moduleCriticalFailure(
+        }).catch(error => setPopupState(PopupOptions.moduleCriticalFailure(
             error.message || String(error),
             locale.popup.ModuleCriticalFailure)
         ));
@@ -90,7 +89,7 @@ export default memo(() => {
         // Leave the button in the loading state a little longer.
         await new Promise(r => setTimeout(r, 100));
         setFormDisabled(false);
-    }, [ recaptchaPublicKey, authenticator, setPopupData, loginComponent.current, passwordComponent.current ]);
+    }, [ recaptchaPublicKey, authenticator, setPopupState, loginComponent.current, passwordComponent.current ]);
 
     if (authenticator.requireCachedAccountData()) return null;
 

@@ -4,4 +4,4 @@
  * https://github.com/re-knownout/lib
  */
 
-export { default, popupComponentState, IPopupState } from "./PopupComponent";
+export { default } from "./RootComponent";

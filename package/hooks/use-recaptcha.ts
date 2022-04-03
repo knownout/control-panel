@@ -15,7 +15,7 @@ interface Recaptcha
 }
 
 /**
- * Function for requiring valid recaptcha client token.
+ * Hook for requiring valid recaptcha client token.
  * @param {string} recaptchaPublicKey recaptcha public key to process.
  * @param {string} action action type.
  * @return {Promise<string>} generated recaptcha token.

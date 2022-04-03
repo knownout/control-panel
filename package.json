@@ -18,7 +18,7 @@
     "homepage": "https://github.com/re-knownout/control-panel#readme",
     "devDependencies": {
         "@heroicons/react": "^1.0.6",
-        "@knownout/interface": "^0.0.9",
+        "@knownout/interface": "^0.1.1",
         "@knownout/lib": "^0.0.8",
         "@testing-library/react": "^12.1.4",
         "@types/crypto-js": "^4.1.1",

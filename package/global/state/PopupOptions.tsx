@@ -5,9 +5,13 @@
  */
 
 import { RefreshIcon } from "@heroicons/react/outline";
-import { ExclamationCircleIcon, ShieldExclamationIcon } from "@heroicons/react/solid";
+import {
+    AcademicCapIcon, AdjustmentsIcon, ExclamationCircleIcon, EyeIcon, InformationCircleIcon, LockClosedIcon,
+    QuestionMarkCircleIcon, ShieldExclamationIcon, TerminalIcon, XIcon
+} from "@heroicons/react/solid";
+import { Button } from "@knownout/interface";
 import React from "react";
-import { IPopupState } from "../../components/PopupComponent/PopupComponent";
+import { IPopupState } from "../../components/PopupComponent";
 import ControlPanelLocale from "../LocaleTypes";
 import StateLocale = ControlPanelLocale.ICommonPopupStatesLocale;
 
@@ -20,7 +24,7 @@ export default {
         open: true,
         title: locale.title,
         titleIcon: <ShieldExclamationIcon />,
-        textContent: locale.textContent,
+        content: locale.textContent,
         buttons: [
             {
                 children: locale.buttonLabel,
@@ -34,7 +38,7 @@ export default {
         open: true,
         title: locale.title,
         titleIcon: <ExclamationCircleIcon />,
-        textContent: locale.textContent,
+        content: locale.textContent,
 
         hintContent: error,
         buttons: [
@@ -44,5 +48,41 @@ export default {
                 onClick: () => window.location.reload()
             }
         ]
+    }),
+
+    welcomeMessage: (callback: (notShow: boolean) => void, locale: StateLocale["WelcomeMessage"]) => ({
+        open: true,
+        className: "welcome-message",
+
+        content: [
+            <span className="text center">
+                { <InformationCircleIcon /> }
+                { locale.versionLabel } - 1.0.0-rc.1
+            </span>,
+
+            <span className="text">
+                { locale.moduleDescription }
+            </span>,
+
+            <div className="buttons">
+                <Button icon={ <EyeIcon /> }>{ locale.aboutModuleButton }</Button>
+                <Button icon={ <QuestionMarkCircleIcon /> }>{ locale.faqButton }</Button>
+                <Button icon={ <AdjustmentsIcon /> }>{ locale.extensionsButton }</Button>
+                <Button icon={ <TerminalIcon /> }>{ locale.developersButton }</Button>
+            </div>,
+
+            <span className="text">
+                { <AcademicCapIcon /> } { locale.appearHint }
+            </span>
+        ],
+        buttons: [
+            {
+                children: locale.closeAndNotShowButton, icon: <LockClosedIcon />,
+                onClick: () => callback(true)
+            },
+
+            { children: locale.closeButton, icon: <XIcon />, onClick: () => callback(false) }
+        ],
+        title: locale.title
     })
 };

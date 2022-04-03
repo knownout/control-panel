@@ -4,30 +4,36 @@
  * https://github.com/re-knownout/lib
  */
 
-import { classNames, limitNumber } from "@knownout/lib";
+import { classNames } from "@knownout/lib";
 
-import React, { createContext, ForwardedRef, forwardRef, memo, useLayoutEffect, useRef } from "react";
-import { BrowserRouter as Router, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import React, { createContext, ForwardedRef, forwardRef, memo, useLayoutEffect, useState } from "react";
+import { Route } from "react-router";
+import { BrowserRouter as Router, Routes } from "react-router-dom";
 import { RecoilRoot } from "recoil";
 import AuthenticationComponent from "./components/AuthenticationComponent";
+import ControlPanelComponent from "./components/ControlPanelComponents/RootComponent";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FallbackComponent from "./components/FallbackComponent";
-import LoaderComponent, { loaderComponentState } from "./components/LoaderComponent";
+import LoaderComponent from "./components/LoaderComponent";
 import PopupComponent, { popupComponentState } from "./components/PopupComponent";
 import ToastComponent from "./components/ToastComponent/ToastComponent";
 import "./ControlPanel.scss";
 import { IControlPanelAuthenticator } from "./global/AuthenticationTypes";
-import { IControlPanelExtension, IControlPanelScreenExtension } from "./global/ExtensionTypes";
+import {
+    IControlPanelExtension, IControlPanelScreenExtension, TCommonObject, TControlPanelExtensionsObject
+} from "./global/ExtensionTypes";
 import ControlPanelLocale from "./global/LocaleTypes";
 import PopupOptions from "./global/state/PopupOptions";
 import useExtensionsObject from "./hooks/use-extensions-object";
 import useInitialAuthentication from "./hooks/use-initial-authentication";
+import useLoadingState from "./hooks/use-loading-state";
+import useMinLoadingTime from "./hooks/use-min-loading-time";
 import useRecoilStateObject from "./hooks/use-recoil-state-object";
 
 export interface IControlPanelProps
 {
     /** Control panel extensions array. */
-    extensions: IControlPanelExtension<unknown, unknown>[];
+    extensions: IControlPanelExtension<TCommonObject, TCommonObject>[];
 
     /** Authentication extension. */
     authenticator: IControlPanelAuthenticator;
@@ -41,7 +47,10 @@ export interface IControlPanelProps
         popup: ControlPanelLocale.ICommonPopupStatesLocale,
 
         /** Authentication locale. */
-        authenticator: ControlPanelLocale.IAuthenticatorLocale
+        authenticator: ControlPanelLocale.IAuthenticatorLocale,
+
+        /** General locale options. */
+        general: ControlPanelLocale.IGeneralLocale
     };
 
     /** Control panel screen extensions array. */
@@ -58,7 +67,7 @@ export interface IControlPanelProps
 interface IControlPanelRootContext
 {
     /** Array of provided extensions. */
-    extensions: { [key: string]: IControlPanelExtension<unknown, unknown> };
+    extensions: TControlPanelExtensionsObject<TCommonObject, TCommonObject>;
 
     /** Array of provided screen extensions. */
     screenExtensions: { [key: string]: IControlPanelScreenExtension };
@@ -84,13 +93,10 @@ export const ControlPanelRootContext = createContext<Partial<IControlPanelRootCo
  * @internal
  */
 const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.LegacyRef<HTMLDivElement> }) => {
-    const navigate = useNavigate();
-    const location = useLocation();
-
-    const { setState: setLoading } = useRecoilStateObject(loaderComponentState);
+    const { startLoading, finishLoading } = useLoadingState();
     const { setState: setPopupData } = useRecoilStateObject(popupComponentState);
 
-    const authenticationResult = useRef<boolean | null>(null);
+    const [ authentication, setAuthentication ] = useState(false);
 
     const { authenticator, recaptchaPublicKey, locale } = props;
 
@@ -98,27 +104,15 @@ const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.Lega
     const extensions = useExtensionsObject(props.extensions);
 
     useLayoutEffect(() => {
-        setLoading(true);
+        startLoading("auth-verify");
 
-        useInitialAuthentication(props.authenticator, recaptchaPublicKey).then(response => {
-            const startTime = Date.now();
-            const lastPathnamePart = location.pathname.split("/").slice(-1)[0];
-
-            if (!response && lastPathnamePart != "auth")
-                navigate("/auth");
-
-            else if (response && lastPathnamePart == "auth")
-                navigate("/");
-
-            authenticationResult.current = response;
-
-            const timeoutLeft = limitNumber(400 - (Date.now() - startTime), { bottom: 0 });
-            setTimeout(() => setLoading(false), timeoutLeft);
-        }).catch(error => setPopupData(PopupOptions.moduleCriticalFailure(
+        useInitialAuthentication(props.authenticator, recaptchaPublicKey).then(response =>
+            useMinLoadingTime(() => setAuthentication(response)).then(() => finishLoading("auth-verify"))
+        ).catch(error => setPopupData(PopupOptions.moduleCriticalFailure(
             error.message || String(error),
             locale.popup.ModuleCriticalFailure
         )));
-    }, [ location.pathname ]);
+    }, [ authentication ]);
 
     const cplRootClassName = classNames("cpl-root");
     return <main className={ cplRootClassName } ref={ props.rootRef }>
@@ -129,10 +123,9 @@ const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.Lega
             extensions, screenExtensions, authenticator, recaptchaPublicKey, locale
         } }>
             <ErrorBoundary FallbackComponent={ FallbackComponent }>
-                <Routes>
-                    <Route path="/auth" element={ <AuthenticationComponent /> } />
-                    <Route path="*" element={ <span>CPL Form handler</span> } />
-                </Routes>
+                { authentication ? <ControlPanelComponent />
+                    : <AuthenticationComponent updateAuthStatus={ () => setAuthentication(true) } />
+                }
             </ErrorBoundary>
         </ControlPanelRootContext.Provider>
     </main>;
@@ -149,7 +142,14 @@ export default memo(forwardRef((props: IControlPanelProps, ref: ForwardedRef<HTM
     // Provide recoil root, router and toast component context
     return <RecoilRoot>
         <Router basename={ props.location }>
-            <ToastComponent children={ <ControlPanelRoot { ...props } rootRef={ ref } /> } />
+            <ToastComponent children={ (() => {
+                const Component = <ControlPanelRoot { ...props } rootRef={ ref } />;
+                return <Routes>
+                    <Route path="/:objectsType/" element={ Component } />
+                    <Route path="/:objectsType/:objectID/*" element={ Component } />
+                    <Route path="*" element={ Component } />
+                </Routes>;
+            })() } />
         </Router>
     </RecoilRoot>;
 }));

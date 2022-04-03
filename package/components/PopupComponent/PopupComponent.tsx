@@ -7,7 +7,7 @@
 import { InformationCircleIcon } from "@heroicons/react/solid";
 import { Button } from "@knownout/interface";
 import { classNames } from "@knownout/lib";
-import React, { memo } from "react";
+import React, { Fragment, memo } from "react";
 import { createPortal } from "react-dom";
 import { atom, useRecoilValue } from "recoil";
 
@@ -33,10 +33,13 @@ export interface IPopupState
     title: string;
 
     /** List of popup paragraphs. */
-    textContent: string[];
+    content: (string | JSX.Element)[];
 
     /** Add an icon before popup title. */
     titleIcon?: JSX.Element;
+
+    /** Class name for current popup */
+    className?: string;
 
     /** Add a hint at bottom of the popup (before buttons). */
     hintContent?: string;
@@ -53,7 +56,7 @@ export const popupComponentState = atom<IPopupState>({
 
         title: String(),
 
-        textContent: [],
+        content: [],
 
         buttons: []
     }
@@ -64,15 +67,19 @@ export const popupComponentState = atom<IPopupState>({
  * @internal
  */
 export default memo(() => {
-    const { open, title, titleIcon, textContent, hintContent, buttons } = useRecoilValue(popupComponentState);
+    const { open, title, titleIcon, content, hintContent, buttons, className } = useRecoilValue(popupComponentState);
 
-    const popoverClassName = classNames("popup-component", { open });
+    const popoverClassName = classNames("popup-component", className, { open });
     const component = <div className={ popoverClassName }>
         <div className="popup-content-wrapper">
             <div className="popup-content-holder">
                 <h1>{ titleIcon }{ title }</h1>
-                <div className="text-holder">
-                    { textContent.map((text, index) => <p children={ text } key={ index + "_PTK" } />) }
+                <div className="content-holder">
+                    { content.map((content, index) => {
+                        const key = index + "_PTK";
+                        if (typeof content === "string") return <p children={ content } key={ key } />;
+                        else return <Fragment key={ key }>{ content }</Fragment>;
+                    }) }
                 </div>
                 { hintContent && <span>{ <InformationCircleIcon /> } { hintContent }</span> }
             </div>

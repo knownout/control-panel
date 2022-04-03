@@ -59,6 +59,36 @@ namespace ControlPanelLocale
         AuthenticationFailure: ControlPanelLocale.IPopupStateLocale;
 
         ModuleCriticalFailure: ControlPanelLocale.IPopupStateLocale;
+
+        WelcomeMessage: {
+            title: string;
+
+            versionLabel: string;
+
+            moduleDescription: string;
+
+            aboutModuleButton: string;
+
+            faqButton: string;
+
+            extensionsButton: string;
+
+            developersButton: string;
+
+            appearHint: string;
+
+            closeButton: string;
+
+            closeAndNotShowButton: string;
+        };
+    }
+
+    /**
+     * General locale options.
+     */
+    export interface IGeneralLocale
+    {
+        previewSearch: string;
     }
 }
 

@@ -6,6 +6,6 @@
 
 /** Map extensions to its names. */
 export default function useExtensionsObject<T> (extensions: T[]) {
-    return (extensions as any[]).map(item => ({ [item.name]: item }))
+    return (extensions as any[]).map(item => ({ [item.key]: item }))
         .reduce((a, b) => Object.assign(a, b)) as { [key: string]: T };
 }

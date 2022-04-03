@@ -1,0 +1,70 @@
+/*!
+ * Copyright (c) 2022 Alexandr <re-knownout> knownout@hotmail.com
+ * Licensed under the GNU Affero General Public License v3.0 License (AGPL-3.0)
+ * https://github.com/re-knownout/lib
+ */
+
+@use "../../../scss/colors";
+
+div.cpl-component-root {
+    position: fixed;
+    display: flex;
+
+    top: 0;
+    left: 0;
+
+    overflow: hidden;
+
+    flex-direction: column;
+    width: 100%;
+
+    height: 100%;
+}
+
+div.popup-component.welcome-message {
+    div.popup-content-wrapper {
+        align-items: center;
+        max-width: 470px;
+    }
+
+    div.popup-content-holder {
+        h1 { font-size: 32px; }
+    }
+
+    div.popup-buttons-holder {
+        button {
+            justify-content: center;
+            width: 100%;
+        }
+    }
+
+    span.text {
+        position: relative;
+        display: flex;
+
+        line-height: 20px;
+        justify-content: center;
+
+        &.center {
+            width: 100%;
+            text-align: center;
+        }
+    }
+
+    div.buttons {
+        margin: 20px 0;
+
+        button {
+            justify-content: center;
+            width: 100%;
+
+            border-radius: 0;
+
+            background: linear-gradient(90deg, colors.$green-dark, colors.$green-light);
+
+            &:first-child { border-radius: 10px 10px 0 0 }
+
+            &:last-child { border-radius: 0 0 10px 10px }
+        }
+    }
+}

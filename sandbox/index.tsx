@@ -1,46 +1,57 @@
-import { CacheController } from "@knownout/lib";
+import { CacheController, Random } from "@knownout/lib";
 import React from "react";
 import ReactDOM from "react-dom";
 import { RecoilRoot } from "recoil";
 import ControlPanel, { IControlPanelProps } from "../package/ControlPanel";
 import { IControlPanelAuthenticator, TAccountData } from "../package/global/AuthenticationTypes";
-import { IControlPanelExtension } from "../package/global/ExtensionTypes";
+import { IControlPanelExtension, TCommonObject } from "../package/global/ExtensionTypes";
 import Locales from "../package/global/Locales";
 import useRecaptcha from "../package/hooks/use-recaptcha";
 
 import "./styles.scss";
 
-class MaterialsExtension implements IControlPanelExtension<any, any>
+class MaterialsExtension implements IControlPanelExtension<TCommonObject, TCommonObject>
 {
     public name = "Материалы";
+
     public version = "1.0.0-rc";
 
-    public requireObjectsPreview (offset: number, limit: number): any[] {
+    public key = "materials";
+
+    public async requireObjectsPreview (): Promise<TCommonObject[]> {
+        return [
+            { id: Random.string(6) },
+            { id: Random.string(6) },
+            { id: Random.string(6) }
+        ];
+    }
+
+    public requireObjectPreviewByKey (key: string) {
         return null as any;
     }
 
-    public requireObjectPreviewByKey (key: string): any {
+    public async requireObjectsPreviewByQuery (query: string) {
+        return [
+            { id: Random.string(6) },
+            { id: Random.string(6) },
+            { id: Random.string(6) }
+        ];
+    }
+
+    public requireObjectContent (key: string) {
         return null as any;
     }
 
-    public requireObjectsPreviewByQuery (query: string, limit: number): any[] {
+    public removeObject (key: string) {
         return null as any;
     }
 
-    public requireObjectContent (key: string): any {
-        return null as any;
-    }
-
-    public removeObject (key: string): Promise<boolean> {
-        return null as any;
-    }
-
-    public renderContentView (content: any): JSX.Element {
+    public renderContentView (content: any) {
         return <div>Hello world</div>;
     }
 
-    public renderObjectPreview (preview: any): JSX.Element {
-        return <div>Hello preview</div>;
+    public renderObjectPreview (preview: TCommonObject) {
+        return <div>{ JSON.stringify(preview) }</div>;
     }
 }
 
@@ -60,7 +71,7 @@ class Authenticator implements IControlPanelAuthenticator
             .catch(error => { throw new Error(error); }) : undefined;
         console.log(token);
 
-        return new Promise<boolean>(resolve => setTimeout(() => resolve(true), 1000));
+        return new Promise<boolean>(resolve => setTimeout(() => resolve(true), 100));
     }
 
     public cacheAccountData (cachedUserData: TAccountData) {
@@ -82,7 +93,8 @@ function App () {
 
         locale: {
             popup: Locales.Popup.Russian,
-            authenticator: Locales.Authenticator.Russian
+            authenticator: Locales.Authenticator.Russian,
+            general: Locales.General.English
         }
     };
 

@@ -17,10 +17,10 @@ import PopupComponent, { popupComponentState } from "./PopupComponent";
  */
 export default memo((props: { error: any }) => {
     const { locale } = useContext(ControlPanelRootContext);
-    const { setState: setPopup } = useRecoilStateObject(popupComponentState);
+    const { setState: setPopupState } = useRecoilStateObject(popupComponentState);
 
     useLayoutEffect(() => {
-        locale && setPopup(PopupOptions.moduleCriticalFailure(
+        locale && setPopupState(PopupOptions.moduleCriticalFailure(
             props.error.message || String(props.error),
             locale.popup.ModuleCriticalFailure
         ));

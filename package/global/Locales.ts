@@ -5,6 +5,7 @@
  */
 
 import ControlPanelLocale from "./LocaleTypes";
+import ICommonPopupStatesLocale = ControlPanelLocale.ICommonPopupStatesLocale;
 
 export default {
     Authenticator: {
@@ -63,7 +64,28 @@ export default {
                 ],
 
                 buttonLabel: "Перезагрузить страницу"
-            } as ControlPanelLocale.IPopupStateLocale
+            } as ControlPanelLocale.IPopupStateLocale,
+
+            WelcomeMessage: {
+                title: "Добро пожаловать в модуль «Панель администрирования»",
+
+                versionLabel: "Текущая версия модуля",
+
+                moduleDescription: "Данный модуль представляет из себя веб-инструмент, встраиваемый в "
+                    + "веб-сайт на стадии разработки, предоставляющий определенные интерфейсы "
+                    + "для взаимодействия с внутренним содержимым веб-сайта",
+
+                aboutModuleButton: "Подробнее о модуле",
+                faqButton: "Инструкция к эксплуатации",
+                extensionsButton: "Активные расширения",
+                developersButton: "Для разработчиков",
+
+                appearHint: "Данное сообщение будет появляться после каждой перезагрузки браузера, "
+                    + "если не выбрана опция «Больше не показывать»",
+
+                closeAndNotShowButton: "Закрыть и больше не показывать",
+                closeButton: "Закрыть сообщение"
+            } as ICommonPopupStatesLocale["WelcomeMessage"]
         },
 
         English: {
@@ -88,7 +110,38 @@ export default {
                 ],
 
                 buttonLabel: "Reload page"
-            } as ControlPanelLocale.IPopupStateLocale
+            } as ControlPanelLocale.IPopupStateLocale,
+
+            WelcomeMessage: {
+                title: "Welcome to the «Administration Panel» module",
+
+                versionLabel: "Current version of module",
+
+                moduleDescription: "This module is a web tool that is embedded in a "
+                    + "website at the development stage, providing certain interfaces for "
+                    + "interacting with the internal content of the website",
+
+                aboutModuleButton: "More about module",
+                faqButton: "Module usage instructions",
+                extensionsButton: "Active extensions",
+                developersButton: "For developers",
+
+                appearHint: "This message will appear after every restart of the browser, unless "
+                    + "the «Do not show again» option is selected",
+
+                closeAndNotShowButton: "Close and don't show again",
+                closeButton: "Close message"
+            } as ICommonPopupStatesLocale["WelcomeMessage"]
+        }
+    },
+
+    General: {
+        Russian: {
+            previewSearch: "Поиск по разделу"
+        },
+
+        English: {
+            previewSearch: "Search by section"
         }
     }
 };

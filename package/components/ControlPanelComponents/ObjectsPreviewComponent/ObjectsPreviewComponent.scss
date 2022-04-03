@@ -1,0 +1,31 @@
+/*!
+ * Copyright (c) 2022 Alexandr <re-knownout> knownout@hotmail.com
+ * Licensed under the GNU Affero General Public License v3.0 License (AGPL-3.0)
+ * https://github.com/re-knownout/lib
+ */
+
+div.cpl-component-root > div.objects-preview {
+    position: relative;
+    display: flex;
+
+    flex-direction: column;
+
+    width: 100%;
+    min-width: 280px;
+    max-width: 380px;
+
+    height: 100%;
+
+    padding: 20px;
+    background: rgba(#000, .04);
+
+    gap: 10px;
+
+    div.interface.input {
+        width: 100%;
+
+        div.input-holder, input {
+            width: 100%;
+        }
+    }
+}

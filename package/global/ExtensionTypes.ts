@@ -11,6 +11,9 @@ interface IControlPanelExtensionCore
     /** Extension name to display inside dropbox (for default extensions). */
     name: string;
 
+    /** Extension key to be used internally and in a path (only latin symbols recommended) */
+    key: string;
+
     /** Extension version to display at extensions screen. */
     version: string;
 
@@ -21,37 +24,40 @@ interface IControlPanelExtensionCore
     image?: JSX.Element;
 }
 
-export interface IControlPanelExtension<ObjectPreview, ObjectContent, Key = string> extends IControlPanelExtensionCore
+export type TCommonObject<T = string> = { id: T, [key: string]: any };
+
+export type TControlPanelExtensionsObject<P extends TCommonObject, C extends TCommonObject, K = string>
+    = { [key: string]: IControlPanelExtension<P, C, K> }
+
+export interface IControlPanelExtension<Preview extends TCommonObject, Content extends TCommonObject, Key = string>
+    extends IControlPanelExtensionCore
 {
     /**
      * Require objects preview list from a server.
-     * @param {number} offset database objects offset,
-     * @param {number} limit count of entries to retrieve.
      * @return {ObjectPreview[]} objects preview list.
      */
-    requireObjectsPreview (offset: number, limit: number): ObjectPreview[];
+    requireObjectsPreview (): Promise<Preview[]>;
 
     /**
-     * Require objects preview list from a server by specific query.
+     * Require objects preview list from a server by a specific query.
      * @param {string} query search query.
-     * @param {number} limit count of entries to retrieve.
      * @return {ObjectPreview[]} objects preview list.
      */
-    requireObjectsPreviewByQuery (query: string, limit: number): ObjectPreview[];
+    requireObjectsPreviewByQuery (query: string): Promise<Preview[]>;
 
     /**
      * Retrieve single object preview from server by object key.
      * @param {Key} key constant unique object key.
      * @return {ObjectPreview} single object preview.
      */
-    requireObjectPreviewByKey (key: Key): ObjectPreview;
+    requireObjectPreviewByKey (key: Key): Promise<Preview>;
 
     /**
      * Require object content from server by constant object key.
      * @param {Key} key constant unique object key.
      * @return object content
      */
-    requireObjectContent (key: Key): ObjectContent;
+    requireObjectContent (key: Key): Promise<Content>;
 
     /**
      * Remove object by its key.
@@ -65,21 +71,21 @@ export interface IControlPanelExtension<ObjectPreview, ObjectContent, Key = stri
      * @param content new object content.
      * @return {Promise<boolean>} update result.
      */
-    updateObject? (content: ObjectContent): Promise<boolean>;
+    updateObject? (content: Content): Promise<boolean>;
 
     /**
      * Renderer for object editor.
      * @param content content of an object.
      * @return {JSX.Element} React element.
      */
-    renderContentView (content: ObjectContent): JSX.Element;
+    renderContentView (content: Content): JSX.Element;
 
     /**
      * Renderer for object preview element.
      * @param {ObjectPreview} preview object preview data.
      * @return {JSX.Element} React element.
      */
-    renderObjectPreview (preview: ObjectPreview): JSX.Element;
+    renderObjectPreview (preview: Preview): JSX.Element;
 }
 
 export interface IControlPanelScreenExtension extends IControlPanelExtensionCore

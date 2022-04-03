@@ -7,11 +7,16 @@
 import { RecoilState, SetterOrUpdater, useRecoilState } from "recoil";
 
 /**
- * Function for converting state value and setter to the object to more comfortable usage.
- * @param {RecoilState} recoilState
- * @return {{setState: SetterOrUpdater, state: SetterOrUpdater}}
+ * Hook for converting state value and setter to the object to more comfortable usage.
  */
 export default function useRecoilStateObject<T> (recoilState: RecoilState<T>) {
-    const [ state, setState ] = useRecoilState(recoilState) as [ T, SetterOrUpdater<T> ];
+    const [ state, _setState ] = useRecoilState(recoilState) as [ T, SetterOrUpdater<T> ];
+
+    const setState = (dispatcher: ((state: T) => Partial<T>) | Partial<T>) => _setState(state => {
+        const nextState = typeof dispatcher === "function" ? dispatcher(state) : dispatcher;
+        if (typeof nextState === "object") return Object.assign({}, state, nextState);
+        else return nextState;
+    });
+
     return { state, setState };
 }
