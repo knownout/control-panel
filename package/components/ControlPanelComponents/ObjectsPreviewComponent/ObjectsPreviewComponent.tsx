@@ -53,7 +53,7 @@ export default memo((props: IObjectsPreviewComponentProps) => {
     useLayoutEffect(() => {
         if (!dropdownRef.current) return;
         const itemsHolder = dropdownRef.current.querySelector("div.items") as HTMLDivElement;
-        
+
         itemsHolder.style.height = itemsHolder.children.length * 58 + 10 + "px";
 
     }, [ dropdownRef.current ]);
@@ -65,11 +65,11 @@ export default memo((props: IObjectsPreviewComponentProps) => {
         startLoading("objects-preview");
 
         // Require or search for objects preview.
-        const requireFunction = cleanString(query).length > 1 ? props.extension.requireObjectsPreview
+        const requireFunction = cleanString(query).length < 2 ? props.extension.requireObjectsPreview
             : props.extension.requireObjectsPreviewByQuery.bind(null, query);
 
-        requireFunction().then(objects => {
-            const objectsPreview = objects.filter(object => object.id !== objectID);
+        requireFunction().then(objectsPreview => {
+            // const objectsPreview = objects.filter(object => object.id !== objectID);
 
             useMinLoadingTime(() => setRootState({ objectsPreview }))
                 .then(() => finishLoading("objects-preview"));
@@ -78,7 +78,7 @@ export default memo((props: IObjectsPreviewComponentProps) => {
 
     // Get selected item at top.
     useEffect(() => {
-        if (!objectID) return;
+        if (!objectID || rootState.objectsPreview.length < 1) return;
 
         const dispatcher = async () => {
             // Check if objectsPreview contains a selected object or require it from extension.
@@ -90,16 +90,22 @@ export default memo((props: IObjectsPreviewComponentProps) => {
         };
 
         dispatcher();
-    }, [ objectID, props.extension ]);
+    }, [ objectID, props.extension, rootState.objectsPreview ]);
 
     // Object preview element renderer.
     const renderObjectPreview = useCallback((object: TCommonObject) => {
         return <div className="object-preview-wrapper" key={ object.id + "_OPK" } data-id={ object.id }
-                    onClick={ () => navigate(`/${ rootState.objectsType }/${ object.id }`) }>
+                    onClick={ () => {
+                        if (object.id != objectID) navigate(`/${ rootState.objectsType }/${ object.id }`);
+                        else {
+                            navigate(`/${ rootState.objectsType }`);
+                            setRootState({ selectedObject: undefined });
+                        }
+                    } }>
 
             { props.extension.renderObjectPreview(object) }
         </div>;
-    }, [ rootState.objectsType, props.extension ]);
+    }, [ rootState.objectsType, props.extension, objectID ]);
 
     return <div className="objects-preview">
         <Dropdown defaultTitle="..." defaultSelected={ extensionKeys.indexOf(rootState.objectsType) }
@@ -118,11 +124,10 @@ export default memo((props: IObjectsPreviewComponentProps) => {
         { locale && <Input placeholder={ locale.general.previewSearch } icon={ <SearchCircleIcon /> }
                            onReturn={ setQuery } /> }
 
+        { rootState.selectedObject && <div className="selected-object">
+            { renderObjectPreview(rootState.selectedObject) }
+        </div> }
         <div className="objects-preview-list">
-            { rootState.selectedObject && <div className="selected-object">
-                { renderObjectPreview(rootState.selectedObject) }
-            </div> }
-
             { rootState.objectsPreview.filter(object => object.id != objectID).map(renderObjectPreview) }
         </div>
     </div>;

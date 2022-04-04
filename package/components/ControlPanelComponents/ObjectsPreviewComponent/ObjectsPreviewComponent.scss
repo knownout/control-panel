@@ -4,19 +4,21 @@
  * https://github.com/re-knownout/lib
  */
 
+@use "../../../scss/colors";
+
 div.cpl-component-root > div.objects-preview {
     position: relative;
     display: flex;
 
-    flex-direction: column;
-
     width: 100%;
+
     min-width: 280px;
     max-width: 380px;
-
     height: 100%;
 
     padding: 20px;
+
+    flex-direction: column;
     background: rgba(#000, .04);
 
     gap: 10px;
@@ -26,6 +28,41 @@ div.cpl-component-root > div.objects-preview {
 
         div.input-holder, input {
             width: 100%;
+        }
+    }
+
+    div.object-preview-wrapper {
+        position: relative;
+        display: block;
+
+        padding: 20px;
+        cursor: pointer;
+        transition: 100ms ease all;
+
+        opacity: .9;
+        background: rgba(#FFF, .8);
+
+        &:first-child { border-radius: 10px 10px 0 0; }
+
+        &:last-child { border-radius: 0 0 10px 10px; }
+
+        &:not(:last-child) {
+            border-bottom: 1px solid rgba(#000, .1);
+        }
+
+        &:hover {
+            opacity: 1;
+            background: rgba(#FFF, .9);
+        }
+    }
+
+    div.selected-object {
+        position: relative;
+        display: block;
+
+        div.object-preview-wrapper {
+            border-radius: 10px;
+            box-shadow: 0 0 0 3px rgba(colors.$green-light, .4);
         }
     }
 }

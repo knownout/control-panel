@@ -18,12 +18,14 @@ class MaterialsExtension implements IControlPanelExtension<TCommonObject, TCommo
 
     public key = "materials";
 
+    public readonly items = [
+        { id: Random.string(6) },
+        { id: Random.string(6) },
+        { id: Random.string(6) }
+    ];
+
     public async requireObjectsPreview (): Promise<TCommonObject[]> {
-        return [
-            { id: Random.string(6) },
-            { id: Random.string(6) },
-            { id: Random.string(6) }
-        ];
+        return this.items;
     }
 
     public requireObjectPreviewByKey (key: string) {
@@ -68,7 +70,9 @@ class Authenticator implements IControlPanelAuthenticator
 
     public async requireServerAuthentication (userData: TAccountData, recaptchaPublicKey?: string): Promise<boolean> {
         const token = recaptchaPublicKey ? await useRecaptcha(recaptchaPublicKey)
-            .catch(error => { throw new Error(error); }) : undefined;
+            .catch(error => {
+                throw new Error(error);
+            }) : undefined;
         console.log(token);
 
         return new Promise<boolean>(resolve => setTimeout(() => resolve(true), 100));

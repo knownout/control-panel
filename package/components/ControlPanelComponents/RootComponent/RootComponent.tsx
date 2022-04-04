@@ -30,7 +30,7 @@ export default memo(() => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const params = useParams<{ objectsType: string }>();
+    const params = useParams<{ objectsType: string, objectID: string }>();
 
     const extension = useMemo(() => extensions && extensions[objectsType], [ objectsType ]);
 
@@ -44,7 +44,7 @@ export default memo(() => {
             setState({ objectsType: params.objectsType, selectedObject: undefined });
     }, [ location ]);
 
-    if (!authenticator || !locale || !extensions || !extension) { return null; }
+    if (!authenticator || !locale || !extensions || !extension) return null;
 
     const cplComponentClassName = classNames("cpl-component-root");
     return <div className={ cplComponentClassName }>

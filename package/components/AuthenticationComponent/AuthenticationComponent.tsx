@@ -49,9 +49,9 @@ export default memo((props: { updateAuthStatus (): void }) => {
     if (!authenticator) throw new Error("No authenticator extension provided");
     if (!locale) throw new Error("No locale provided");
 
-    const onComponentLoginButtonClick = useCallback(async () => {
-        // Check if input elements exist.
-        if (!loginComponent.current || !passwordComponent.current) return;
+    const onComponentLogin = useCallback(async () => {
+        // Check if input elements exist and has value.
+        if (!loginComponent.current || !passwordComponent.current || !login || !password) return;
 
         const accountData: TAccountData = {
             hash: sha256(passwordComponent.current.value).toString(),
@@ -99,10 +99,12 @@ export default memo((props: { updateAuthStatus (): void }) => {
         <p>{ locale.authenticator.description }</p>
 
         <Input placeholder={ locale.authenticator.usernameInputPlaceholder } icon={ <IdentificationIcon /> }
-               ref={ loginComponent } onInput={ value => setLogin(value.length > 3) } />
+               ref={ loginComponent } onInput={ value => setLogin(value.length > 3) }
+               onReturn={ onComponentLogin } />
 
         <Input placeholder={ locale.authenticator.passwordInputPlaceholder } type="password" icon={ <KeyIcon /> }
-               ref={ passwordComponent } onInput={ value => setPassword(value.length > 3) } />
+               ref={ passwordComponent } onInput={ value => setPassword(value.length > 3) }
+               onReturn={ onComponentLogin } />
 
         <div className="recaptcha-hint">
             <span>{ locale.authenticator.recaptchaDescription }</span>
@@ -116,7 +118,7 @@ export default memo((props: { updateAuthStatus (): void }) => {
             </div>
         </div>
 
-        <Button icon={ <FingerPrintIcon /> } onClick={ onComponentLoginButtonClick } disableOnLoading={ true }
+        <Button icon={ <FingerPrintIcon /> } onClick={ onComponentLogin } disableOnLoading={ true }
                 disabled={ !login || !password }>
             { locale.authenticator.loginButtonLabel }
         </Button>
