@@ -32,6 +32,9 @@ export type TControlPanelExtensionsObject<P extends TCommonObject, C extends TCo
 export interface IControlPanelExtension<Preview extends TCommonObject, Content extends TCommonObject, Key = string>
     extends IControlPanelExtensionCore
 {
+    /** Save object content when get closed */
+    saveOnClose?: boolean;
+
     /**
      * Require objects preview list from a server.
      * @return {ObjectPreview[]} objects preview list.
@@ -86,6 +89,12 @@ export interface IControlPanelExtension<Preview extends TCommonObject, Content e
      * @return {JSX.Element} React element.
      */
     renderObjectPreview (preview: Preview): JSX.Element;
+
+    /**
+     * Render initial screen (when no selected object)
+     * @return {JSX.Element} React element.
+     */
+    renderInitialContentScreen? (): JSX.Element;
 }
 
 export interface IControlPanelScreenExtension extends IControlPanelExtensionCore

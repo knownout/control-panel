@@ -40,8 +40,8 @@ class MaterialsExtension implements IControlPanelExtension<TCommonObject, TCommo
         ];
     }
 
-    public requireObjectContent (key: string) {
-        return null as any;
+    public async requireObjectContent (key: string) {
+        return { id: "sasat" };
     }
 
     public removeObject (key: string) {

@@ -10,15 +10,14 @@ div.cpl-component-root > div.objects-preview {
     position: relative;
     display: flex;
 
-    width: 100%;
+    flex-direction: column;
+    width: 360px;
 
-    min-width: 280px;
-    max-width: 380px;
+    min-width: 360px;
+
     height: 100%;
 
     padding: 20px;
-
-    flex-direction: column;
     background: rgba(#000, .04);
 
     gap: 10px;

@@ -18,6 +18,7 @@ import ObjectsPreviewComponent from "../ObjectsPreviewComponent";
 import useWelcomeMessage from "../use-welcome-message";
 
 import "./RootComponent.scss";
+import ObjectContentComponent from "../ObjectContentComponent";
 
 /**
  * Root control panel component (after authentication).
@@ -48,9 +49,7 @@ export default memo(() => {
 
     const cplComponentClassName = classNames("cpl-component-root");
     return <div className={ cplComponentClassName }>
-        <ObjectsPreviewComponent extensions={ extensions } extension={ extension } />
-        <div className="object-content-view">
-
-        </div>
+        <ObjectsPreviewComponent extension={ extension } />
+        <ObjectContentComponent extension={ extension } />
     </div>;
 });

@@ -20,7 +20,10 @@ import ToastComponent from "./components/ToastComponent/ToastComponent";
 import "./ControlPanel.scss";
 import { IControlPanelAuthenticator } from "./global/AuthenticationTypes";
 import {
-    IControlPanelExtension, IControlPanelScreenExtension, TCommonObject, TControlPanelExtensionsObject
+    IControlPanelExtension,
+    IControlPanelScreenExtension,
+    TCommonObject,
+    TControlPanelExtensionsObject
 } from "./global/ExtensionTypes";
 import ControlPanelLocale from "./global/LocaleTypes";
 import PopupOptions from "./global/state/PopupOptions";
@@ -29,6 +32,7 @@ import useInitialAuthentication from "./hooks/use-initial-authentication";
 import useLoadingState from "./hooks/use-loading-state";
 import useMinLoadingTime from "./hooks/use-min-loading-time";
 import useRecoilStateObject from "./hooks/use-recoil-state-object";
+import { bindContextToMethods } from "./global/ExtensionUtils";
 
 export interface IControlPanelProps
 {
@@ -92,7 +96,7 @@ export const ControlPanelRootContext = createContext<Partial<IControlPanelRootCo
  * Control panel internal component.
  * @internal
  */
-const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.LegacyRef<HTMLDivElement> }) => {
+const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.LegacyRef<HTMLElement> }) => {
     const { startLoading, finishLoading } = useLoadingState();
     const { setState: setPopupData } = useRecoilStateObject(popupComponentState);
 
@@ -138,12 +142,15 @@ const ControlPanelRoot = memo((props: IControlPanelProps & { rootRef: React.Lega
  *
  * _Common extensions supplies together with a module._
  */
-export default memo(forwardRef((props: IControlPanelProps, ref: ForwardedRef<HTMLDivElement>) => {
+export default memo(forwardRef((props: IControlPanelProps, ref: ForwardedRef<HTMLElement>) => {
+    const { extensions, ...resetProps } = props;
+    extensions.forEach(extension => bindContextToMethods(extension));
+
     // Provide recoil root, router and toast component context
     return <RecoilRoot>
         <Router basename={ props.location }>
             <ToastComponent children={ (() => {
-                const Component = <ControlPanelRoot { ...props } rootRef={ ref } />;
+                const Component = <ControlPanelRoot { ...resetProps } rootRef={ ref } extensions={ extensions } />;
                 return <Routes>
                     <Route path="/:objectsType/" element={ Component } />
                     <Route path="/:objectsType/:objectID/*" element={ Component } />

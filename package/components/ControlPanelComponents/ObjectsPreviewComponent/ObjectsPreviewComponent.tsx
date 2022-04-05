@@ -13,7 +13,7 @@ import React, { memo, useCallback, useContext, useEffect, useLayoutEffect, useRe
 import { useNavigate, useParams } from "react-router";
 import { ControlPanelRootContext } from "../../../ControlPanel";
 
-import { IControlPanelExtension, TCommonObject, TControlPanelExtensionsObject } from "../../../global/ExtensionTypes";
+import { IControlPanelExtension, TCommonObject } from "../../../global/ExtensionTypes";
 import { controlPanelRootState } from "../../../global/state/RecoilStates";
 
 import useLoadingState from "../../../hooks/use-loading-state";
@@ -24,9 +24,6 @@ import "./ObjectsPreviewComponent.scss";
 
 interface IObjectsPreviewComponentProps
 {
-    // Available extensions list.
-    extensions: TControlPanelExtensionsObject<TCommonObject, TCommonObject>;
-
     // Current extension.
     extension: IControlPanelExtension<TCommonObject, TCommonObject>;
 }
@@ -43,9 +40,10 @@ export default memo((props: IObjectsPreviewComponentProps) => {
     const { setState: setRootState, state: rootState } = useRecoilStateObject(controlPanelRootState);
     const { startLoading, finishLoading } = useLoadingState();
 
-    const { locale } = useContext(ControlPanelRootContext);
+    const { locale, extensions } = useContext(ControlPanelRootContext);
 
-    const extensionKeys = Object.keys(props.extensions);
+    if (!extensions) return null;
+    const extensionKeys = Object.keys(extensions);
 
     // START
 
@@ -111,7 +109,7 @@ export default memo((props: IObjectsPreviewComponentProps) => {
         <Dropdown defaultTitle="..." defaultSelected={ extensionKeys.indexOf(rootState.objectsType) }
                   icon={ <ChevronUpIcon /> } ref={ dropdownRef }>
 
-            { Object.values(props.extensions).map(extension => {
+            { Object.values(extensions).map(extension => {
                 return <DropdownItem key={ extension.key + "_EK" } children={ extension.name } onClick={ () => {
                     // Show loading screen and then navigate.
                     if (rootState.objectsType != extension.key) {
